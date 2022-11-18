@@ -10,8 +10,10 @@ import { category, inputList } from "../services/data";
 import { fileUpLoad } from "../services/fileUpload";
 import Swal from "sweetalert2";
 import { useNavigate, useParams } from "react-router-dom";
+import useFormP from "./hooks/useFormP";
 
 const AddPaletas = () => {
+  
   const { paletas } = useSelector((state) => state.paletasStore);
   const [tittle, setTittle] = useState("Agregar nueva paleta a la colección");
   const [initialValue, setInitialValue] = useState({
@@ -37,7 +39,8 @@ const AddPaletas = () => {
           quantity: paletaFind.quantity,
         };
         setInitialValue(valueForm);
-        setUrlImg(paletaFind.image)
+        setUrlImg(paletaFind.image);
+        setDataForm(valueForm)
       }
     }
   }, []);
@@ -46,28 +49,55 @@ const AddPaletas = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors },watch
   } = useForm();
   const { error } = useSelector((state) => state.paletasStore);
   const dispatch = useDispatch();
+  // const handdleChangeInputs=(target)=>{
+  //   setInitialValue({...initialValue,
+  //     [target.name]:target.value
+  //   })
+  //   console.log(initialValue)
+  
+
+  // }
+  const [dataForm,setDataForm, handleChangeInput]=useFormP({
+    name: "",
+    category: "",
+    price: "",
+    description: "",
+    quantity: "",
+  })
   const onSubmit = async (data) => {
-    const URLimg = await fileUpLoad(data.image[0]);
-    const paleta = {
-      ...data,
-      image: URLimg,
-    };
-    dispatch(actionAddPaletasAsync(paleta));
-    console.log(error);
-    if (error.error) {
-      Swal.fire("Upp ha ocurrido un error:", `${error.errorMessage}`, "error");
+    if (id) {
+      console.log(dataForm);
+      
+      // console.log(data)
+
+
     } else {
-      Swal.fire(
-        "De maravilla!!",
-        "Ya la paleta se ha agregado",
-        "success"
-      ).then(() => {
-        navigate("/home");
-      });
+      const URLimg = await fileUpLoad(data.image[0]);
+      const paleta = {
+        ...data,
+        image: URLimg,
+      };
+      dispatch(actionAddPaletasAsync(paleta));
+      console.log(error);
+      if (error.error) {
+        Swal.fire(
+          "Upp ha ocurrido un error:",
+          `${error.errorMessage}`,
+          "error"
+        );
+      } else {
+        Swal.fire(
+          "De maravilla!!",
+          "Ya la paleta se ha agregado",
+          "success"
+        ).then(() => {
+          navigate("/home");
+        });
+      }
     }
   };
   return (
@@ -79,8 +109,11 @@ const AddPaletas = () => {
             return (
               <FloatingLabel key={index} label={item.label} className="mb-3">
                 <Form.Select
+                name={item.name}
+                onChange={handleChangeInput}
                   // defaultValue={initialValue[item.name]}
                   aria-label="Default select example"
+                 
                   {...register(item.name)}
                 >
                   <option value="">Seleccione una opción</option>
@@ -89,9 +122,13 @@ const AddPaletas = () => {
                       key={element.value}
                       value={element.label}
                       className="text-capitalize"
-                      selected={initialValue[item.name]&& (initialValue[item.name] === element.label)?true:false}
-                      //evalua dos condiciones primero si existe y segundo si esa categoria es igual a la categoria del name 
-                      
+                      selected={
+                        initialValue[item.name] &&
+                        initialValue[item.name] === element.label
+                          ? true
+                          : false
+                      }
+                      //evalua dos condiciones primero si existe y segundo si esa categoria es igual a la categoria del name
                     >
                       {element.label}
                     </option>
@@ -105,7 +142,11 @@ const AddPaletas = () => {
             return (
               <FloatingLabel key={index} label={item.label} className="mb-3">
                 <Form.Control
+                 name={item.name}
+                //  onChange={({target})=>{handdleChangeInputs(target)}}
                   defaultValue={initialValue[item.name]}
+                  // value={dataForm[item.name]}
+                  onChange={handleChangeInput}
                   as="textarea"
                   {...register(item.name)}
                 />
@@ -117,6 +158,9 @@ const AddPaletas = () => {
           return (
             <FloatingLabel key={index} label={item.label} className="mb-3">
               <Form.Control
+               name={item.name}
+                // onChange={({target})=>{handdleChangeInputs(target)}}
+                onChange={handleChangeInput}
                 defaultValue={initialValue[item.name]}
                 type={item.type}
                 size={item.type === "file" ? "sm" : ""}
