@@ -1,0 +1,17 @@
+.imgLogo{
+    width: 50px;
+    height: auto;
+}
+
+.navLink{
+    color: black;
+    text-decoration: none;
+    margin: auto 0;
+}
+.navLink:hover{
+    color: blue;
+}
+
+.navLink--active{
+    font-weight: bolder;
+}
