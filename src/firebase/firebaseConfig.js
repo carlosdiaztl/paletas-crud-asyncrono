@@ -10,13 +10,13 @@ import { getFirestore } from "firebase/firestore";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyBymZ-C2UbYg_oRs-rbaQd_KtrRiDS30pM",
-  authDomain: "redux-makaia.firebaseapp.com",
-  projectId: "redux-makaia",
-  storageBucket: "redux-makaia.appspot.com",
-  messagingSenderId: "150484936665",
-  appId: "1:150484936665:web:794be76b86c51033995bc8",
-  measurementId: "G-BX0JQ0J7TH"
+  apiKey: "AIzaSyDbHsAUVMcncMYjwYrNI4OTGKN4_0PtP0E",
+  authDomain: "crud-completo-a347c.firebaseapp.com",
+  projectId: "crud-completo-a347c",
+  storageBucket: "crud-completo-a347c.appspot.com",
+  messagingSenderId: "519562316437",
+  appId: "1:519562316437:web:15d0098ff04fdda32ce99c",
+  measurementId: "G-Z557RW81P8"
 };
 
 

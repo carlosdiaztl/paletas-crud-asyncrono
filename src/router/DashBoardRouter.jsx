@@ -10,6 +10,7 @@ const DashBoardRouter = () => {
     <Routes>
         <Route path='/home' element={<Home/>}/>
         <Route path='/add' element={<AddPaletas/>}/>
+        <Route path='/edit/:id' element={<AddPaletas/>} />
     </Routes>
   )
 }
