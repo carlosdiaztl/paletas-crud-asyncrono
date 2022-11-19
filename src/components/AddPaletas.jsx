@@ -43,7 +43,7 @@ const AddPaletas = () => {
         setDataForm(valueForm)
       }
     }
-  }, []);
+  }, [setInitialValue]);
 
   const navigate = useNavigate();
   const {
@@ -72,7 +72,7 @@ const AddPaletas = () => {
     if (id) {
       console.log(dataForm);
       
-      // console.log(data)
+      console.log(data)
 
 
     } else {

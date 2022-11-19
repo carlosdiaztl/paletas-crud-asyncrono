@@ -15,7 +15,7 @@ const useFormP = (initialState = {}) => {
         setDataForm(initialState)
     }
 
-  return [dataForm,setDataForm, handleChangeInput, reset]
+  return [dataForm, handleChangeInput, reset]
 }
 
 export default useFormP
