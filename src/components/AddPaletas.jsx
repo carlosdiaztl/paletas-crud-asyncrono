@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import {
   actionAddPaletasAsync,
-  actionFillPaletasAsync,
+  actionEditPaletasAsync
 } from "../redux/actions/paletasActions";
 import { category, inputList } from "../services/data";
 import { fileUpLoad } from "../services/fileUpload";
@@ -13,67 +13,43 @@ import { useNavigate, useParams } from "react-router-dom";
 import useFormP from "./hooks/useFormP";
 
 const AddPaletas = () => {
-  
-  const { paletas } = useSelector((state) => state.paletasStore);
-  const [tittle, setTittle] = useState("Agregar nueva paleta a la colección");
-  const [initialValue, setInitialValue] = useState({
-    name: "",
-    category: "",
-    price: "",
-    description: "",
-    quantity: "",
-  });
-  const [urlImg, setUrlImg] = useState("");
-  const { id } = useParams();
-  console.log(id);
-  useEffect(() => {
-    if (id) {
-      setTittle("Edite la paleta");
-      const paletaFind = paletas.find((paleta) => paleta.id === id);
-      if (paletaFind) {
-        const valueForm = {
-          name: paletaFind.name,
-          category: paletaFind.category,
-          price: paletaFind.price,
-          description: paletaFind.description,
-          quantity: paletaFind.quantity,
-        };
-        setInitialValue(valueForm);
-        setUrlImg(paletaFind.image);
-        setDataForm(valueForm)
-      }
-    }
-  }, [setInitialValue]);
-
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { id } = useParams();
+  const { paletas, error } = useSelector((state) => state.paletasStore);
+  const paleta = paletas.find(item => item.id === id)
+  const defaulValues = {
+    name: paleta ? paleta.name : "",
+    category: paleta ? paleta.category : "",
+    description: paleta ? paleta.description : "",
+    price: paleta ? paleta.price : "",
+    quantity: paleta ? paleta.quantity : "",
+    //image: paleta ? paleta.image : ""
+  }
+
   const {
     register,
     handleSubmit,
-    formState: { errors },watch
-  } = useForm();
-  const { error } = useSelector((state) => state.paletasStore);
-  const dispatch = useDispatch();
-  // const handdleChangeInputs=(target)=>{
-  //   setInitialValue({...initialValue,
-  //     [target.name]:target.value
-  //   })
-  //   console.log(initialValue)
-  
+    formState: { errors }, watch
+  } = useForm({
+    defaulValues
+  });
 
-  // }
-  const [dataForm,setDataForm, handleChangeInput]=useFormP({
-    name: "",
-    category: "",
-    price: "",
-    description: "",
-    quantity: "",
-  })
+
   const onSubmit = async (data) => {
     if (id) {
-      console.log(dataForm);
-      
-      console.log(data)
 
+      console.log(data)
+      console.log(data.image.length)
+      const editPaleta = {id: paleta.id,  ...data}
+      if (data.image.length) {
+        const URLimg = await fileUpLoad(data.image[0]);
+        editPaleta.image = URLimg;
+      }else{
+        editPaleta.image = paleta.image;
+      }
+      console.log(editPaleta);
+      dispatch(actionEditPaletasAsync(editPaleta));
 
     } else {
       const URLimg = await fileUpLoad(data.image[0]);
@@ -102,18 +78,16 @@ const AddPaletas = () => {
   };
   return (
     <div>
-      <h1>{tittle} </h1>
+      <h1>{paleta && id ? `Actualice la informacion de ${paleta.name}` :
+        'Agregue una nueva paleta a la coleccion'} </h1>
       <Form onSubmit={handleSubmit(onSubmit)}>
         {inputList.map((item, index) => {
           if (item.type === "select") {
             return (
               <FloatingLabel key={index} label={item.label} className="mb-3">
                 <Form.Select
-                name={item.name}
-                onChange={handleChangeInput}
-                  // defaultValue={initialValue[item.name]}
                   aria-label="Default select example"
-                 
+                  defaultValue={defaulValues[item.name]}
                   {...register(item.name)}
                 >
                   <option value="">Seleccione una opción</option>
@@ -122,13 +96,13 @@ const AddPaletas = () => {
                       key={element.value}
                       value={element.label}
                       className="text-capitalize"
-                      selected={
-                        initialValue[item.name] &&
-                        initialValue[item.name] === element.label
-                          ? true
-                          : false
-                      }
-                      //evalua dos condiciones primero si existe y segundo si esa categoria es igual a la categoria del name
+                    // selected={
+                    //   initialValue[item.name] &&
+                    //   initialValue[item.name] === element.label
+                    //     ? true
+                    //     : false
+                    // }
+                    //evalua dos condiciones primero si existe y segundo si esa categoria es igual a la categoria del name
                     >
                       {element.label}
                     </option>
@@ -142,12 +116,8 @@ const AddPaletas = () => {
             return (
               <FloatingLabel key={index} label={item.label} className="mb-3">
                 <Form.Control
-                 name={item.name}
-                //  onChange={({target})=>{handdleChangeInputs(target)}}
-                  defaultValue={initialValue[item.name]}
-                  // value={dataForm[item.name]}
-                  onChange={handleChangeInput}
                   as="textarea"
+                  defaultValue={defaulValues[item.name]}
                   {...register(item.name)}
                 />
                 {/* <p>{errors[item.name]?.message}</p> */}
@@ -158,12 +128,9 @@ const AddPaletas = () => {
           return (
             <FloatingLabel key={index} label={item.label} className="mb-3">
               <Form.Control
-               name={item.name}
-                // onChange={({target})=>{handdleChangeInputs(target)}}
-                onChange={handleChangeInput}
-                defaultValue={initialValue[item.name]}
                 type={item.type}
                 size={item.type === "file" ? "sm" : ""}
+                defaultValue={defaulValues[item.name]}
                 {...register(item.name)}
               />
               {/* <p>{errors[item.name]?.message}</p> */}
@@ -171,7 +138,8 @@ const AddPaletas = () => {
           );
         })}
         <Button variant="warning" type="submit" className="mb-3">
-          Agregar paleta
+        {paleta && id ? `Actualizar paleta` :
+        'Agregar nueva paleta'}
         </Button>
       </Form>
     </div>

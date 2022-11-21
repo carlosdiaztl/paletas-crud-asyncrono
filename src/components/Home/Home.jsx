@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Badge, Button, Card } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { actionFillPaletasAsync } from "../../redux/actions/paletasActions";
+import { actionDeletePaletasAsync, actionFillPaletasAsync } from "../../redux/actions/paletasActions";
 
 const Home = () => {
   const { paletas } = useSelector((store) => store.paletasStore);
@@ -36,7 +36,7 @@ const Home = () => {
                   Edit
                 </Button>
                 <Button size="sm" variant="danger" onClick={() => {
-                    console.log(paleta.id)
+                    dispatch(actionDeletePaletasAsync(paleta))
                   }}>
                   Delete
                 </Button>

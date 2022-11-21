@@ -1,6 +1,6 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase/firebaseConfig";
-import { google } from "../../firebase/firebaseConfig";
+//import { google } from "../../firebase/firebaseConfig";
 
 import { userTypes } from "../types/userTypes";
 

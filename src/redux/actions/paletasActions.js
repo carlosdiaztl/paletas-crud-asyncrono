@@ -1,5 +1,5 @@
 
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from "firebase/firestore";
 import { dataBase } from "../../firebase/firebaseConfig";
 import { paletasTypes } from "../types/paletasTypes";
 
@@ -60,4 +60,53 @@ return{
     type:paletasTypes.PALETAS_ADD,
     payload:{...objetoPaleta}
 }
+}
+
+export const actionEditPaletasAsync = (paletaEdit) => {
+    return async (dispatch) => {
+        const paletaRef = doc(dataBase, collectionName, paletaEdit.id)
+        try {
+            await updateDoc(paletaRef, paletaEdit);
+            dispatch(actionEditPaletasSync({
+                id: paletaRef.id, 
+                ...paletaEdit
+            }))
+        } catch (error) {
+            console.log(error)
+            // dispatch(actionEditPaletasSync({
+            //     error: true,
+            //     errorMessage: error.message
+            // }))
+        }       
+    }
+}
+
+const actionEditPaletasSync = (paletaEdit) => {
+    return {
+        type: paletasTypes.PALETAS_EDIT,
+        payload: {...paletaEdit}
+    }
+}
+
+export const actionDeletePaletasAsync =(paleta) => {
+    return  async (dispatch) => {
+        const paletaRef = doc(dataBase, collectionName, paleta.id)
+        try {
+            await deleteDoc(paletaRef);
+            dispatch(actionDeletePaletasSync(paleta))
+        } catch (error) {
+            console.log(error);
+            dispatch(actionDeletePaletasSync({
+                error: true,
+                errorMessage: error.message
+            }))
+        }        
+    }
+}
+
+const actionDeletePaletasSync = (paleta) => {
+    return {
+        type: paletasTypes.PALETAS_DELETE,
+        payload: {id: paleta.id}
+    }
 }
